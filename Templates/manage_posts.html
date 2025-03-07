@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý bài viết - Tiny App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Thanh điều hướng -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Tiny App" class="logo">
+            {% if 'username' in session %}
+                <div class="navbar-links">
+                    <p>Chào, {{ session['username'] }}! <a href="{{ url_for('logout') }}">Đăng xuất</a></p>
+                    <a href="{{ url_for('create_post') }}">Tạo bài viết mới</a>
+                    <a href="{{ url_for('manage_posts') }}">Quản lý bài viết của tôi</a>
+                    <a href="{{ url_for('home') }}">Trang chủ</a>
+                    {% if session['username'] == 'admin' %}
+                        <a href="{{ url_for('admin') }}">Trang quản trị</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="navbar-links">
+                    <p><a href="{{ url_for('login') }}">Đăng nhập</a> | <a href="{{ url_for('register') }}">Đăng ký</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <h1>Quản lý bài viết của tôi</h1>
+
+    <!-- Hiển thị Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flash-messages">
+            {% for category, message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Danh sách bài viết -->
+    {% if posts %}
+    <form method="POST">
+        <ul>
+            {% for post in posts %}
+            <li>
+                <input type="checkbox" name="post_ids" value="{{ post.id }}">
+                <strong>{{ post.content }}</strong>
+                <br><em>Được đăng bởi: {{ post.username }} vào {{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</em>
+            </li>
+            {% endfor %}
+        </ul>
+        <input type="submit" value="Xóa bài viết đã chọn">
+    </form>
+    {% else %}
+    <p>Không có bài viết nào để quản lý.</p>
+    {% endif %}
+</body>
+</html>

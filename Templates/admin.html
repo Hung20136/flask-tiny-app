@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Quản Trị - Tiny App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Thanh điều hướng -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Hiển thị logo nằm bên trái -->
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Tiny App" class="logo">
+            
+            {% if 'username' in session %}
+                <div class="navbar-links">
+                    <p>Chào, {{ session['username'] }}! <a href="{{ url_for('logout') }}">Đăng xuất</a></p>
+                    <a href="{{ url_for('create_post') }}">Tạo bài viết mới</a>
+                    <a href="{{ url_for('manage_posts') }}">Quản lý bài viết của tôi</a>
+                    <a href="{{ url_for('home') }}">Trang chủ</a> <!-- Thêm link về trang chủ -->
+                    {% if session['username'] == 'admin' %}
+                        <a href="{{ url_for('admin') }}">Trang quản trị</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="navbar-links">
+                    <p><a href="{{ url_for('login') }}">Đăng nhập</a> | <a href="{{ url_for('register') }}">Đăng ký</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <h1>Trang Quản Trị</h1>
+
+    <!-- Hiển thị Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flash-messages">
+            {% for category, message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Quản lý người dùng</h2>
+    <table>
+        <tr>
+            <th>Tên tài khoản</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+        {% for username, user in users.items() %}
+        <tr>
+            <td>{{ username }}</td>
+            <td>{{ 'Đã khóa' if user['blocked'] else 'Hoạt động' }}</td>
+            <td>
+                {% if username != 'admin' %}
+                    {% if user['blocked'] %}
+                        <form method="POST" style="display:inline;">
+                            <input type="hidden" name="username" value="{{ username }}">
+                            <button name="action" value="unblock" type="submit">Mở khóa tài khoản</button>
+                        </form>
+                    {% else %}
+                        <form method="POST" style="display:inline;">
+                            <input type="hidden" name="username" value="{{ username }}">
+                            <button name="action" value="block" type="submit">Khóa tài khoản</button>
+                        </form>
+                    {% endif %}
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="username" value="{{ username }}">
+                        <button name="action" value="reset" type="submit">Reset mật khẩu</button>
+                    </form>
+                {% else %}
+                    <span>Không thể thay đổi tài khoản admin</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>

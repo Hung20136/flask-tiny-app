@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Bài Viết - Tiny App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Thanh điều hướng -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Hiển thị logo nằm bên trái -->
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Tiny App" class="logo">
+            
+            {% if 'username' in session %}
+                <div class="navbar-links">
+                    <p>Chào, {{ session['username'] }}! <a href="{{ url_for('logout') }}">Đăng xuất</a></p>
+                    <a href="{{ url_for('create_post') }}">Tạo bài viết mới</a>
+                    <a href="{{ url_for('manage_posts') }}">Quản lý bài viết của tôi</a>
+                    <a href="{{ url_for('home') }}">Trang chủ</a> <!-- Link về trang chủ -->
+                    {% if session['username'] == 'admin' %}
+                        <a href="{{ url_for('admin') }}">Trang quản trị</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="navbar-links">
+                    <p><a href="{{ url_for('login') }}">Đăng nhập</a> | <a href="{{ url_for('register') }}">Đăng ký</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <h1>Tạo Bài Viết Mới</h1>
+
+    <!-- Hiển thị Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flash-messages">
+            {% for category, message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label for="content">Nội dung bài viết:</label>
+        <textarea id="content" name="content" required></textarea>
+
+        <input type="submit" value="Tạo bài viết">
+    </form>
+</body>
+</html>

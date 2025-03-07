@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - Tiny App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Thanh điều hướng trên -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Hiển thị logo nằm bên trái -->
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Tiny App" class="logo">
+            
+            {% if 'username' in session %}
+                <div class="navbar-links">
+                    <p>Chào, {{ session['username'] }}! <a href="{{ url_for('logout') }}">Đăng xuất</a></p>
+                    <a href="{{ url_for('create_post') }}">Tạo bài viết mới</a>
+                    <a href="{{ url_for('manage_posts') }}">Quản lý bài viết của tôi</a>
+                    {% if session['username'] == 'admin' %}
+                        <a href="{{ url_for('admin') }}">Trang quản trị</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p><a href="{{ url_for('login') }}">Đăng nhập</a> | <a href="{{ url_for('register') }}">Đăng ký</a></p>
+            {% endif %}
+        </div>
+    </nav>
+
+    <h1>BLog App</h1>
+
+    <!-- Hiển thị Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flash-messages">
+            {% for category, message in messages %}
+                {% if category != 'login' %}
+                    <li>{{ message }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Hiển thị danh sách bài viết -->
+    {% if posts %}
+    <ul>
+        {% for post in posts %}
+        <li>
+            <p><strong>{{ post.content }}</strong></p>
+            <p><em>Được đăng bởi: {{ post.username }} vào {{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</em></p>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Phân trang -->
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('home', page=page-1) }}">Trang trước</a>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+            {% if p == page %}
+                <span>{{ p }}</span>
+            {% else %}
+                <a href="{{ url_for('home', page=p) }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('home', page=page+1) }}">Trang sau</a>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <p>Không có bài viết nào.</p>
+    {% endif %}
+</body>
+</html>
