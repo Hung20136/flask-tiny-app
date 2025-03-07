@@ -12,13 +12,36 @@
 
 ## 3. Hướng dẫn cài đặt & chạy
 ### Yêu cầu:
-- Python 3.x
-- Flask
-- SQLite (hoặc database khác)
+-Python 3.12
+-PostgreSQL
+-Git
+-Docker
 
 ### Cài đặt & chạy:
 ```bash
 git clone https://github.com/Hung20136/flask-tiny-app.git
 cd flask-tiny-app
+```
+
+### Thiết lập môi trường
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+```
+
+### Cài đặt cần thiết
+```bash
 pip install -r requirements.txt
-python app.py
+```
+### Lệnh để khởi tạo
+```bash
+flask run
+```
+Ứng dụng sẽ có tại địa chỉ: **`http://127.0.0.1:5000`**
+
+## 🐳 Triển khai với Docker
+```bash
+docker build -t flask-tiny-app .
+docker run -p 5000:5000 flask-tiny-app
+```
+
